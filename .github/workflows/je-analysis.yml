@@ -1,0 +1,37 @@
+name: Journal Entry Analysis
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'je_samples (1).xlsx'
+      - 'scripts/analyze_je.py'
+      - '.github/workflows/je-analysis.yml'
+      - 'requirements.txt'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run analysis
+        run: |
+          python scripts/analyze_je.py --input "je_samples (1).xlsx" --output outputs
+
+      - name: Upload outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: je-analysis-outputs
+          path: outputs/
